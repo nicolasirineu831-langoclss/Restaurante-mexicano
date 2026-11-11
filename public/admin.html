@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Painel · Coyote</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#1D4E89;--red:#D9342B;--cream:#EFE6D2;--paper:#FBF6EA;--ink:#2A1A12;--muted:#6B5444;--line:#DCCDB0;--saffron:#E8A33D;--green:#4E7A3A}
+*{box-sizing:border-box}
+body{margin:0;font-family:"DM Sans",system-ui,sans-serif;background:var(--cream);color:var(--ink);font-size:15px}
+h1,h2{font-family:"Alfa Slab One",Georgia,serif;font-weight:400;margin:0 0 12px}
+h1{font-size:26px}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;border-radius:10px;padding:9px 14px;min-height:40px;background:var(--blue);color:#fff;transition:transform .15s,background .2s}
+button:hover{transform:translateY(-1px)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--saffron);outline-offset:2px}
+button.ghost{background:transparent;color:var(--blue);border:2px solid var(--blue)}
+button.red{background:var(--red)}
+button.sm{padding:6px 10px;min-height:32px;font-size:13px}
+button:disabled{opacity:.45;cursor:not-allowed;transform:none}
+input,select,textarea{padding:9px 11px;border:2px solid var(--line);border-radius:10px;background:var(--paper);width:100%}
+label{font-size:13px;font-weight:500;display:block;margin:10px 0 4px}
+.hidden{display:none!important}
+.meta{font-size:13px;color:var(--muted)}
+.err{color:var(--red);font-size:13px;min-height:18px;margin-top:8px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+header{background:var(--blue);color:#fff;display:flex;justify-content:space-between;align-items:center;padding:12px 18px;flex-wrap:wrap;gap:10px}
+header>b{font-family:"Alfa Slab One",serif;font-weight:400;font-size:18px}
+nav{display:flex;gap:6px;flex-wrap:wrap}
+nav button{background:transparent;color:#fff;border:2px solid transparent}
+nav button[aria-current="page"]{background:var(--saffron);color:var(--ink)}
+main{padding:18px;max-width:1200px;margin:0 auto}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px}
+.kpi small{color:var(--muted);display:block}
+.kpi b{font-family:"Alfa Slab One",serif;font-weight:400;font-size:22px;display:block;margin:4px 0}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
+.bars{display:flex;align-items:flex-end;gap:6px;height:150px;margin-bottom:24px}
+.bars div{flex:1;background:var(--blue);border-radius:6px 6px 0 0;min-height:2px;position:relative}
+.bars div span{position:absolute;bottom:-20px;left:0;right:0;text-align:center;font-size:10px;color:var(--muted)}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.order{background:var(--paper);border:1px solid var(--line);border-left:6px solid var(--blue);border-radius:12px;padding:14px;margin-bottom:12px}
+.order.s-RECEIVED{border-left-color:var(--red)}
+.order.s-DELIVERED,.order.s-PICKED_UP{border-left-color:var(--green)}
+.order.s-CANCELLED{border-left-color:#888;opacity:.75}
+.order ul{margin:6px 0;padding-left:18px}
+.tag{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;background:var(--cream);border:1px solid var(--line);margin:2px 4px 2px 0}
+.actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.filters{max-width:560px;flex:1}
+.toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,150%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:999px;transition:transform .3s;z-index:9;max-width:92vw;text-align:center}
+.toast.show{transform:translate(-50%,0)}
+@media(max-width:700px){
+  table.wide thead{display:none}
+  table.wide tr{display:block;border-bottom:1px solid var(--line);padding:6px 0}
+  table.wide td{display:block;border:0;padding:3px 0}
+}
+@media print{header,nav,.toast,.no-print{display:none!important}body{background:#fff}main{padding:0}.panel{border:0}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <form id="loginForm" class="panel" style="max-width:360px;margin:12vh auto">
+    <h1>Painel do restaurante</h1>
+    <p class="meta">Acesso restrito à equipe autorizada.</p>
+    <label for="email">E-mail</label>
+    <input id="email" type="email" autocomplete="username" required>
+    <label for="pass">Senha</label>
+    <input id="pass" type="password" autocomplete="current-password" required>
+    <button type="submit" style="width:100%;margin-top:14px">Entrar</button>
+    <div class="err" id="lerr" role="alert"></div>
+  </form>
+</div>
+
+<div id="app" class="hidden">
+  <header>
+    <b>Coyote · Painel</b>
+    <nav aria-label="Seções do painel">
+      <button data-go="dash" data-min="MANAGER">Visão geral</button>
+      <button data-go="orders" data-min="STAFF">Pedidos</button>
+      <button data-go="customers" data-min="MANAGER">Clientes</button>
+      <button data-go="menu" data-min="MANAGER">Cardápio</button>
+      <button data-go="coupons" data-min="MANAGER">Promoções</button>
+      <button data-go="reports" data-min="MANAGER">Relatórios</button>
+      <button data-go="settings" data-min="OWNER">Configurações</button>
+    </nav>
+    <div class="row" style="gap:10px">
+      <span id="who" style="font-size:13px"></span>
+      <button class="ghost sm" id="logout" style="color:#fff;border-color:#fff">Sair</button>
+    </div>
+  </header>
+
+  <main>
+    <section data-view="dash" class="hidden">
+      <h1>Visão geral</h1>
+      <div id="dashBody"></div>
+    </section>
+
+    <section data-view="orders" class="hidden">
+      <div class="row" style="margin-bottom:14px">
+        <h1>Pedidos</h1>
+        <div class="row filters">
+          <select id="fStatus" aria-label="Filtrar por status">
+            <option value="">Todos os status</option>
+            <option value="RECEIVED">Recebido</option>
+            <option value="CONFIRMED">Confirmado</option>
+            <option value="PREPARING">Em preparo</option>
+            <option value="READY">Pronto</option>
+            <option value="OUT_FOR_DELIVERY">Saiu para entrega</option>
+            <option value="DELIVERED">Entregue</option>
+            <option value="PICKED_UP">Retirado</option>
+            <option value="CANCELLED">Cancelado</option>
+          </select>
+          <input id="fQ" type="search" placeholder="Número, cliente ou telefone" aria-label="Buscar pedido">
+        </div>
+      </div>
+      <div id="ordersList"></div>
+    </section>
+
+    <section data-view="customers" class="hidden">
+      <h1>Clientes</h1>
+      <div class="panel" id="custBody"></div>
+    </section>
+
+    <section data-view="menu" class="hidden">
+      <h1>Cardápio</h1>
+      <p class="meta">Altere preço e disponibilidade. Criação e exclusão de produtos entram na próxima etapa.</p>
+      <div class="panel" id="menuBody"></div>
+    </section>
+
+    <section data-view="reports" class="hidden">
+      <h1>Relatórios</h1>
+      <div class="panel no-print">
+        <div class="row">
+          <div style="flex:1;min-width:150px"><label for="rFrom">De</label><input id="rFrom" type="date"></div>
+          <div style="flex:1;min-width:150px"><label for="rTo">Até</label><input id="rTo" type="date"></div>
+          <button id="csvBtn">Baixar CSV de vendas</button>
+          <button class="ghost" id="pdfBtn">Imprimir / salvar PDF</button>
+        </div>
+        <p class="meta">O CSV usa ponto e vírgula e vírgula decimal, para abrir direto no Excel em português. O PDF é gerado pela opção de impressão do navegador.</p>
+      </div>
+      <div class="panel" id="profitBody"></div>
+      <div class="panel" id="expBody"></div>
+      <div class="panel" id="repBody"></div>
+    </section>
+
+    <section data-view="coupons" class="hidden">
+      <h1>Promoções e cupons</h1>
+      <form id="cpForm" class="panel" style="max-width:760px">
+        <div class="row">
+          <div style="flex:1;min-width:140px"><label for="cpCode">Código</label><input id="cpCode" required placeholder="BEMVINDO10"></div>
+          <div style="flex:1;min-width:140px"><label for="cpType">Tipo de desconto</label><select id="cpType"><option value="pct">Porcentagem (%)</option><option value="fixed">Valor fixo (R$)</option></select></div>
+          <div style="flex:1;min-width:140px"><label for="cpValue">Valor</label><input id="cpValue" inputmode="decimal" required></div>
+        </div>
+        <div class="row">
+          <div style="flex:1;min-width:140px"><label for="cpMin">Compra mínima (R$)</label><input id="cpMin" inputmode="decimal" value="0"></div>
+          <div style="flex:1;min-width:140px"><label for="cpMax">Máximo de usos (vazio = ilimitado)</label><input id="cpMax" inputmode="numeric"></div>
+          <div style="flex:1;min-width:140px"><label for="cpExp">Validade</label><input id="cpExp" type="date"></div>
+        </div>
+        <button type="submit" style="margin-top:14px">Criar cupom</button>
+      </form>
+      <div class="panel" id="cpBody"></div>
+      <div class="panel">
+        <h2 style="font-size:20px">Ofertas, combos e destaques</h2>
+        <form id="pmForm" style="margin-bottom:14px">
+          <div class="row">
+            <div style="flex:1;min-width:150px"><label for="pmKind">Tipo</label><select id="pmKind"><option value="DAILY_OFFER">Oferta do dia</option><option value="COMBO">Combo</option><option value="HIGHLIGHT">Destaque</option></select></div>
+            <div style="flex:2;min-width:200px"><label for="pmTitle">Título</label><input id="pmTitle" required></div>
+            <div style="flex:1;min-width:120px"><label for="pmPrice">Preço (R$, opcional)</label><input id="pmPrice" inputmode="decimal"></div>
+          </div>
+          <div class="row">
+            <div style="flex:2;min-width:200px"><label for="pmDesc">Descrição ou itens do combo</label><input id="pmDesc"></div>
+            <div style="flex:1;min-width:160px"><label for="pmProduct">Produto relacionado</label><select id="pmProduct"></select></div>
+          </div>
+          <div class="row">
+            <div style="flex:1;min-width:140px"><label for="pmStart">Início</label><input id="pmStart" type="date"></div>
+            <div style="flex:1;min-width:140px"><label for="pmEnd">Fim</label><input id="pmEnd" type="date"></div>
+            <div style="flex:1;min-width:90px"><label for="pmOrder">Ordem</label><input id="pmOrder" inputmode="numeric" value="0"></div>
+            <label style="display:flex;gap:8px;align-items:center;margin:0 0 8px"><input type="checkbox" id="pmActive" checked style="width:20px;height:20px"> Ativa</label>
+            <button type="submit">Criar</button>
+          </div>
+        </form>
+        <div id="pmBody"></div>
+      </div>
+    </section>
+
+    <section data-view="settings" class="hidden">
+      <h1>Configurações</h1>
+      <form id="setForm" class="panel" style="max-width:580px">
+        <label for="sName">Nome do estabelecimento</label><input id="sName" required>
+        <label for="sPhone">Telefone</label><input id="sPhone">
+        <label for="sWa">WhatsApp</label><input id="sWa">
+        <label for="sAddr">Endereço</label><input id="sAddr">
+        <label for="sHours">Horário de funcionamento</label><textarea id="sHours" rows="3"></textarea>
+        <label for="sFee">Taxa de entrega (R$)</label><input id="sFee" inputmode="decimal">
+        <label for="sMin">Pedido mínimo (R$)</label><input id="sMin" inputmode="decimal">
+        <label style="display:flex;gap:10px;align-items:center;margin-top:14px">
+          <input type="checkbox" id="sOpen" style="width:20px;height:20px"> Aceitar pedidos online
+        </label>
+        <button type="submit" style="margin-top:14px">Salvar configurações</button>
+      </form>
+    </section>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+const brl = (c) => ((c || 0) / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const toCents = (s) => Math.round(parseFloat(String(s || '0').replace(/\./g, '').replace(',', '.')) * 100) || 0;
+const fromCents = (c) => ((c || 0) / 100).toFixed(2).replace('.', ',');
+const LABEL = { RECEIVED: 'Recebido', CONFIRMED: 'Confirmado', PREPARING: 'Em preparo', READY: 'Pronto', OUT_FOR_DELIVERY: 'Saiu para entrega', DELIVERED: 'Entregue', PICKED_UP: 'Retirado', CANCELLED: 'Cancelado' };
+const PAY = { PIX: 'Pix', CREDIT_CARD: 'Crédito', DEBIT_CARD: 'Débito', CASH: 'Dinheiro' };
+const ROLE = { OWNER: 'Proprietário', MANAGER: 'Gerente', STAFF: 'Equipe' };
+const LEVEL = { CUSTOMER: 0, STAFF: 1, MANAGER: 2, OWNER: 3 };
+// Espelho das regras do servidor (o servidor é quem decide de fato).
+const TRANS = { RECEIVED: ['CONFIRMED', 'CANCELLED'], CONFIRMED: ['PREPARING', 'CANCELLED'], PREPARING: ['READY', 'CANCELLED'], READY: ['OUT_FOR_DELIVERY', 'DELIVERED', 'PICKED_UP', 'CANCELLED'], OUT_FOR_DELIVERY: ['DELIVERED', 'CANCELLED'], DELIVERED: [], PICKED_UP: [], CANCELLED: [] };
+const nextFor = (o) => (TRANS[o.status] || []).filter((s) => {
+  if (o.type === 'PICKUP' && (s === 'OUT_FOR_DELIVERY' || s === 'DELIVERED')) return false;
+  if (o.type === 'DELIVERY' && (s === 'PICKED_UP' || (s === 'DELIVERED' && o.status === 'READY'))) return false;
+  return true;
+});
+
+let me = null, curView = '', orders = [], es = null, timer = null;
+const can = (min) => !!me && LEVEL[me.role] >= LEVEL[min];
+
+async function api(path, opts = {}) {
+  const r = await fetch(path, {
+    method: opts.method || 'GET',
+    headers: opts.body ? { 'Content-Type': 'application/json' } : {},
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+  });
+  let data = {};
+  try { data = await r.json(); } catch { /* resposta sem JSON */ }
+  if (!r.ok) {
+    const e = new Error(data.error || 'Erro ao comunicar com o servidor');
+    e.status = r.status;
+    throw e;
+  }
+  return data;
+}
+
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._h);
+  t._h = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+async function logoutQuiet() {
+  await api('/api/auth/logout', { method: 'POST' }).catch(() => {});
+  me = null;
+}
+
+function showLogin() {
+  $('#app').classList.add('hidden');
+  $('#login').classList.remove('hidden');
+}
+
+function enterApp() {
+  $('#login').classList.add('hidden');
+  $('#app').classList.remove('hidden');
+  $('#who').textContent = `${me.name} · ${ROLE[me.role]}`;
+  document.querySelectorAll('nav button[data-min]').forEach((b) => b.classList.toggle('hidden', !can(b.dataset.min)));
+  connectLive();
+  go(can('MANAGER') ? 'dash' : 'orders');
+}
+
+async function boot() {
+  try {
+    me = (await api('/api/auth/me')).user;
+  } catch {
+    me = null;
+  }
+  if (!me) return showLogin();
+  if (!can('STAFF')) {
+    await logoutQuiet();
+    $('#lerr').textContent = 'Esta conta não tem acesso ao painel.';
+    return showLogin();
+  }
+  enterApp();
+}
+
+$('#loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  $('#lerr').textContent = '';
+  try {
+    me = (await api('/api/auth/login', { method: 'POST', body: { email: $('#email').value, password: $('#pass').value } })).user;
+    if (!can('STAFF')) {
+      await logoutQuiet();
+      $('#lerr').textContent = 'Esta conta não tem acesso ao painel.';
+      return;
+    }
+    $('#pass').value = '';
+    enterApp();
+  } catch (err) {
+    $('#lerr').textContent = err.message;
+  }
+});
+
+$('#logout').addEventListener('click', async () => {
+  if (es) es.close();
+  await logoutQuiet();
+  location.reload();
+});
+
+document.querySelector('nav').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-go]');
+  if (b) go(b.dataset.go);
+});
+
+function go(view) {
+  curView = view;
+  document.querySelectorAll('section[data-view]').forEach((s) => s.classList.toggle('hidden', s.dataset.view !== view));
+  document.querySelectorAll('nav button[data-go]').forEach((b) => {
+    if (b.dataset.go === view) b.setAttribute('aria-current', 'page');
+    else b.removeAttribute('aria-current');
+  });
+  const loaders = { dash: loadDash, orders: loadOrders, customers: loadCustomers, menu: loadMenu, coupons: () => Promise.all([loadCoupons(), loadPromos()]), reports: loadReports, settings: loadSettings };
+  loaders[view]?.().catch((err) => toast(err.message));
+}
+
+function prodTable(list) {
+  if (!list.length) return '<p class="meta">Sem vendas no período.</p>';
+  return `<table class="wide"><thead><tr><th>Produto</th><th>Quantidade</th><th>Faturamento</th></tr></thead><tbody>${list
+    .map((p) => `<tr><td>${esc(p.name)}</td><td>${p.quantity}</td><td>${brl(p.revenueCents)}</td></tr>`)
+    .join('')}</tbody></table>`;
+}
+
+async function loadDash() {
+  if (!can('MANAGER')) return;
+  const d = await api('/api/admin/dashboard');
+  const kpi = (t, p) => `<div class="kpi"><small>${t}</small><b>${brl(p.revenueCents)}</b><span class="meta">${p.orders} pedidos · ticket médio ${brl(p.avgTicketCents)}</span></div>`;
+  const max = Math.max(1, ...d.daily.map((x) => x.revenueCents));
+  $('#dashBody').innerHTML = `
+    <div class="cards">
+      ${kpi('Faturamento de hoje', d.today)}
+      ${kpi('Últimos 7 dias', d.week)}
+      ${kpi('Últimos 30 dias', d.month)}
+      <div class="kpi"><small>Pedidos em andamento</small><b>${d.activeOrders}</b><span class="meta">${d.completedToday} concluídos hoje</span></div>
+    </div>
+    <div class="panel"><h2 style="font-size:20px">Vendas dos últimos 14 dias</h2>
+      <div class="bars">${d.daily.map((x) => `<div style="height:${Math.round((x.revenueCents / max) * 100)}%" title="${x.day}: ${brl(x.revenueCents)}"><span>${x.day.slice(8)}</span></div>`).join('')}</div>
+    </div>
+    <div class="panel"><h2 style="font-size:20px">Produtos com maior faturamento (30 dias)</h2>${prodTable(d.topByRevenue)}</div>`;
+}
+
+async function loadOrders() {
+  const qs = new URLSearchParams();
+  if ($('#fStatus').value) qs.set('status', $('#fStatus').value);
+  if ($('#fQ').value.trim()) qs.set('q', $('#fQ').value.trim());
+  orders = (await api('/api/admin/orders?' + qs)).orders;
+  $('#ordersList').innerHTML = orders.length
+    ? orders.map(orderCard).join('')
+    : '<p class="meta">Nenhum pedido encontrado.</p>';
+}
+
+function orderCard(o) {
+  const addr = o.address
+    ? `${esc(o.address.street)}, ${esc(o.address.number)} · ${esc(o.address.neighborhood)} · ${esc(o.address.city)}`
+    : 'Retirada no estabelecimento';
+  const items = o.items
+    .map((i) => `<li>${i.quantity}× ${esc(i.name)}${i.addons.length ? ' + ' + esc(i.addons.join(', ')) : ''}${i.notes ? ` <em>(${esc(i.notes)})</em>` : ''}</li>`)
+    .join('');
+  const change = o.paymentMethod === 'CASH' && o.changeForCents ? ` · troco para ${brl(o.changeForCents)}` : '';
+  const buttons = nextFor(o)
+    .map((s) => `<button class="sm ${s === 'CANCELLED' ? 'red' : ''}" data-go="${esc(o.number)}|${s}">${s === 'CANCELLED' ? 'Cancelar' : LABEL[s]}</button>`)
+    .join('');
+  return `<article class="order s-${o.status}">
+    <div class="row"><div><b>${esc(o.number)}</b>
+      <span class="tag">${LABEL[o.status]}</span><span class="tag">${o.type === 'DELIVERY' ? 'Delivery' : 'Retirada'}</span><span class="tag">${PAY[o.paymentMethod]}${change}</span>
+      ${o.paymentStatus ? `<span class="tag">Pagamento: ${esc(o.paymentStatus)}</span>` : ''}</div>
+      <b>${brl(o.totalCents)}</b></div>
+    <p class="meta">${new Date(o.createdAt).toLocaleString('pt-BR')} · ${esc(o.customer.name)} · ${esc(o.customer.phone)}</p>
+    <p class="meta">${addr}</p>
+    <ul>${items}</ul>
+    ${o.notes ? `<p><b>Obs.:</b> ${esc(o.notes)}</p>` : ''}
+    ${o.cancelReason ? `<p><b>Motivo do cancelamento:</b> ${esc(o.cancelReason)}</p>` : ''}
+    ${buttons ? `<div class="actions">${buttons}</div>` : ''}
+  </article>`;
+}
+
+$('#ordersList').addEventListener('click', async (e) => {
+  const b = e.target.closest('button[data-go]');
+  if (!b) return;
+  const [num, status] = b.dataset.go.split('|');
+  let reason;
+  if (status === 'CANCELLED') {
+    const r = prompt('Justificativa do cancelamento (obrigatória, mínimo 3 caracteres):');
+    if (r === null) return;
+    reason = r.trim();
+    if (reason.length < 3) return toast('Informe a justificativa');
+    if (!confirm(`Cancelar o pedido ${num}?`)) return;
+  }
+  b.disabled = true;
+  try {
+    await api(`/api/admin/orders/${encodeURIComponent(num)}/status`, { method: 'PATCH', body: { status, reason } });
+    toast(`Pedido ${num}: ${LABEL[status]}`);
+  } catch (err) {
+    toast(err.message);
+  }
+  await loadOrders();
+});
+
+$('#fStatus').addEventListener('change', () => loadOrders().catch((err) => toast(err.message)));
+$('#fQ').addEventListener('input', () => {
+  clearTimeout(timer);
+  timer = setTimeout(() => loadOrders().catch((err) => toast(err.message)), 350);
+});
+
+// Tempo real: o servidor avisa quando há pedido novo ou mudança de status.
+function connectLive() {
+  if (es) es.close();
+  es = new EventSource('/api/admin/stream');
+  es.addEventListener('order', (e) => {
+    const d = JSON.parse(e.data);
+    toast(`Pedido ${d.number}: ${LABEL[d.status] || d.status}`);
+    if (curView === 'orders') loadOrders().catch(() => {});
+    if (curView === 'dash') loadDash().catch(() => {});
+  });
+}
+
+async function loadCustomers() {
+  if (!can('MANAGER')) return;
+  const { customers } = await api('/api/admin/customers');
+  $('#custBody').innerHTML = customers.length
+    ? `<table class="wide"><thead><tr><th>Nome</th><th>E-mail</th><th>Telefone</th><th>Cadastro</th><th>Pedidos</th><th>Total gasto</th></tr></thead><tbody>${customers
+        .map((c) => `<tr><td>${esc(c.name)}</td><td>${esc(c.email)}</td><td>${esc(c.phone || '—')}</td><td>${new Date(c.createdAt).toLocaleDateString('pt-BR')}</td><td>${c.ordersCount}</td><td>${brl(c.totalSpentCents)}</td></tr>`)
+        .join('')}</tbody></table>`
+    : '<p class="meta">Nenhum cliente cadastrado.</p>';
+}
+
+async function loadMenu() {
+  const { products } = await api('/api/admin/products');
+  $('#menuBody').innerHTML = `<table class="wide"><thead><tr><th>Produto</th><th>Categoria</th><th>Preço (R$)</th><th>Custo (R$)</th><th>Disponível</th><th></th></tr></thead><tbody>${products
+    .map((p) => `<tr data-id="${esc(p.id)}">
+      <td>${esc(p.name)}</td><td>${esc(p.category)}</td>
+      <td><input type="text" inputmode="decimal" value="${fromCents(p.priceCents)}" aria-label="Preço de ${esc(p.name)}" style="width:110px"></td>
+      <td><input type="text" inputmode="decimal" value="${fromCents(p.costCents)}" aria-label="Custo de ${esc(p.name)}" style="width:110px"></td>
+      <td><input type="checkbox" class="av" ${p.available ? 'checked' : ''} aria-label="Disponível: ${esc(p.name)}" style="width:20px;height:20px"></td>
+      <td><button class="sm ghost save">Salvar</button></td></tr>`)
+    .join('')}</tbody></table>`;
+}
+
+$('#menuBody').addEventListener('click', async (e) => {
+  const b = e.target.closest('button.save');
+  if (!b) return;
+  const tr = b.closest('tr');
+  const [priceEl, costEl] = tr.querySelectorAll('input[type=text]');
+  const priceCents = toCents(priceEl.value);
+  if (priceCents <= 0) return toast('Preço inválido');
+  try {
+    await api(`/api/admin/products/${encodeURIComponent(tr.dataset.id)}`, {
+      method: 'PATCH',
+      body: { priceCents, costCents: toCents(costEl.value), available: tr.querySelector('.av').checked },
+    });
+    toast('Produto atualizado');
+  } catch (err) {
+    toast(err.message);
+  }
+});
+
+async function loadSettings() {
+  if (!can('OWNER')) return;
+  const { settings: s } = await api('/api/admin/settings');
+  $('#sName').value = s?.name || '';
+  $('#sPhone').value = s?.phone || '';
+  $('#sWa').value = s?.whatsapp || '';
+  $('#sAddr').value = s?.address || '';
+  $('#sHours').value = s?.hours || '';
+  $('#sFee').value = fromCents(s?.deliveryFeeCents);
+  $('#sMin').value = fromCents(s?.minOrderCents);
+  $('#sOpen').checked = !!s?.acceptingOrders;
+}
+
+$('#setForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  try {
+    await api('/api/admin/settings', {
+      method: 'PATCH',
+      body: {
+        name: $('#sName').value.trim(),
+        phone: $('#sPhone').value.trim() || null,
+        whatsapp: $('#sWa').value.trim() || null,
+        address: $('#sAddr').value.trim() || null,
+        hours: $('#sHours').value.trim() || null,
+        deliveryFeeCents: toCents($('#sFee').value),
+        minOrderCents: toCents($('#sMin').value),
+        acceptingOrders: $('#sOpen').checked,
+      },
+    });
+    toast('Configurações salvas');
+  } catch (err) {
+    toast(err.message);
+  }
+});
+
+async function loadReports() {
+  if (!can('MANAGER')) return;
+  loadProfit().catch((err) => toast(err.message));
+  loadExpenses().catch((err) => toast(err.message));
+  const d = await api('/api/admin/dashboard');
+  const row = (n, p) => `<tr><td>${n}</td><td>${p.orders}</td><td>${brl(p.revenueCents)}</td><td>${brl(p.avgTicketCents)}</td></tr>`;
+  $('#repBody').innerHTML = `
+    <h2 style="font-size:20px">Resumo de vendas</h2>
+    <table class="wide"><thead><tr><th>Período</th><th>Pedidos</th><th>Faturamento</th><th>Ticket médio</th></tr></thead>
+    <tbody>${row('Hoje', d.today)}${row('Últimos 7 dias', d.week)}${row('Últimos 30 dias', d.month)}</tbody></table>
+    <h2 style="font-size:20px;margin-top:18px">Produtos (30 dias)</h2>${prodTable(d.topByRevenue)}
+    <p class="meta" style="margin-top:12px">Faturamento não é lucro. Custos e despesas ainda não estão cadastrados.</p>`;
+}
+
+$('#csvBtn').addEventListener('click', () => {
+  const qs = new URLSearchParams();
+  if ($('#rFrom').value) qs.set('from', new Date($('#rFrom').value + 'T00:00:00').toISOString());
+  if ($('#rTo').value) qs.set('to', new Date($('#rTo').value + 'T23:59:59').toISOString());
+  window.location.href = '/api/admin/reports/sales.csv?' + qs;
+});
+$('#pdfBtn').addEventListener('click', () => window.print());
+
+async function loadCoupons() {
+  if (!can('MANAGER')) return;
+  const { coupons } = await api('/api/admin/coupons');
+  const val = (c) => (c.percentOff ? `${c.percentOff}%` : brl(c.amountOffCents));
+  $('#cpBody').innerHTML = coupons.length
+    ? `<table class="wide"><thead><tr><th>Código</th><th>Desconto</th><th>Mínimo</th><th>Usos</th><th>Validade</th><th>Ativo</th><th></th></tr></thead><tbody>${coupons
+        .map((c) => `<tr data-id="${esc(c.id)}"><td><b>${esc(c.code)}</b></td><td>${val(c)}</td><td>${brl(c.minSubtotalCents)}</td><td>${c.usedCount}${c.maxUses ? ' / ' + c.maxUses : ''}</td><td>${c.expiresAt ? new Date(c.expiresAt).toLocaleDateString('pt-BR') : 'Sem validade'}</td><td><input type="checkbox" class="cpAct" ${c.active ? 'checked' : ''} aria-label="Ativo: ${esc(c.code)}" style="width:20px;height:20px"></td><td><button class="sm red cpDel">Excluir</button></td></tr>`)
+        .join('')}</tbody></table>`
+    : '<p class="meta">Nenhum cupom cadastrado.</p>';
+}
+
+$('#cpForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const isPct = $('#cpType').value === 'pct';
+  const num = parseFloat($('#cpValue').value.replace(',', '.'));
+  if (!Number.isFinite(num) || num <= 0) return toast('Informe um valor válido');
+  const body = {
+    code: $('#cpCode').value.trim(),
+    minSubtotalCents: toCents($('#cpMin').value),
+    maxUses: $('#cpMax').value ? parseInt($('#cpMax').value, 10) : null,
+    expiresAt: $('#cpExp').value ? new Date($('#cpExp').value + 'T23:59:59').toISOString() : null,
+    percentOff: isPct ? Math.round(num) : null,
+    amountOffCents: isPct ? null : Math.round(num * 100),
+  };
+  try {
+    await api('/api/admin/coupons', { method: 'POST', body });
+    toast('Cupom criado');
+    e.target.reset();
+    await loadCoupons();
+  } catch (err) {
+    toast(err.message);
+  }
+});
+
+$('#cpBody').addEventListener('change', async (e) => {
+  if (!e.target.classList.contains('cpAct')) return;
+  const id = e.target.closest('tr').dataset.id;
+  try {
+    await api(`/api/admin/coupons/${encodeURIComponent(id)}`, { method: 'PATCH', body: { active: e.target.checked } });
+    toast('Cupom atualizado');
+  } catch (err) {
+    toast(err.message);
+    loadCoupons().catch(() => {});
+  }
+});
+
+$('#cpBody').addEventListener('click', async (e) => {
+  const b = e.target.closest('button.cpDel');
+  if (!b) return;
+  const id = b.closest('tr').dataset.id;
+  if (!confirm('Excluir este cupom? Essa ação não pode ser desfeita.')) return;
+  try {
+    await api(`/api/admin/coupons/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    toast('Cupom excluído');
+    await loadCoupons();
+  } catch (err) {
+    toast(err.message);
+  }
+});
+
+let PRODUCT_OPTS = [];
+const KIND = { DAILY_OFFER: 'Oferta do dia', COMBO: 'Combo', HIGHLIGHT: 'Destaque' };
+
+async function loadPromos() {
+  if (!can('MANAGER')) return;
+  const [{ promotions }, { products }] = await Promise.all([api('/api/admin/promotions'), api('/api/admin/products')]);
+  PRODUCT_OPTS = products;
+  $('#pmProduct').innerHTML = '<option value="">Nenhum</option>' + products.map((p) => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');
+  $('#pmBody').innerHTML = promotions.length
+    ? `<table class="wide"><thead><tr><th>Tipo</th><th>Título</th><th>Preço</th><th>Período</th><th>Ativa</th><th></th></tr></thead><tbody>${promotions
+        .map((p) => `<tr data-id="${esc(p.id)}"><td>${KIND[p.kind]}</td><td><b>${esc(p.title)}</b>${p.description ? `<br><span class="meta">${esc(p.description)}</span>` : ''}${p.product ? `<br><span class="meta">Produto: ${esc(p.product.name)}</span>` : ''}</td><td>${p.priceCents != null ? brl(p.priceCents) : '—'}</td><td>${p.startsAt ? new Date(p.startsAt).toLocaleDateString('pt-BR') : 'Sempre'} até ${p.endsAt ? new Date(p.endsAt).toLocaleDateString('pt-BR') : 'sem fim'}</td><td><input type="checkbox" class="pmAct" ${p.active ? 'checked' : ''} aria-label="Ativa: ${esc(p.title)}" style="width:20px;height:20px"></td><td><button class="sm red pmDel">Excluir</button></td></tr>`)
+        .join('')}</tbody></table>`
+    : '<p class="meta">Nenhuma oferta, combo ou destaque cadastrado.</p>';
+}
+
+$('#pmForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const priceRaw = $('#pmPrice').value.trim();
+  const body = {
+    kind: $('#pmKind').value,
+    title: $('#pmTitle').value.trim(),
+    description: $('#pmDesc').value.trim() || null,
+    priceCents: priceRaw ? toCents(priceRaw) : null,
+    productId: $('#pmProduct').value || null,
+    startsAt: $('#pmStart').value ? new Date($('#pmStart').value + 'T00:00:00').toISOString() : null,
+    endsAt: $('#pmEnd').value ? new Date($('#pmEnd').value + 'T23:59:59').toISOString() : null,
+    sortOrder: parseInt($('#pmOrder').value || '0', 10) || 0,
+    active: $('#pmActive').checked,
+  };
+  try {
+    await api('/api/admin/promotions', { method: 'POST', body });
+    toast('Promoção criada');
+    e.target.reset();
+    $('#pmActive').checked = true;
+    await loadPromos();
+  } catch (err) {
+    toast(err.message);
+  }
+});
+
+$('#pmBody').addEventListener('change', async (e) => {
+  if (!e.target.classList.contains('pmAct')) return;
+  const id = e.target.closest('tr').dataset.id;
+  try {
+    await api(`/api/admin/promotions/${encodeURIComponent(id)}`, { method: 'PATCH', body: { active: e.target.checked } });
+    toast('Promoção atualizada');
+  } catch (err) {
+    toast(err.message);
+    loadPromos().catch(() => {});
+  }
+});
+
+$('#pmBody').addEventListener('click', async (e) => {
+  const b = e.target.closest('button.pmDel');
+  if (!b) return;
+  if (!confirm('Excluir esta promoção?')) return;
+  try {
+    await api(`/api/admin/promotions/${encodeURIComponent(b.closest('tr').dataset.id)}`, { method: 'DELETE' });
+    toast('Promoção excluída');
+    await loadPromos();
+  } catch (err) {
+    toast(err.message);
+  }
+});
+
+function rangeQS() {
+  const qs = new URLSearchParams();
+  if ($('#rFrom').value) qs.set('from', new Date($('#rFrom').value + 'T00:00:00').toISOString());
+  if ($('#rTo').value) qs.set('to', new Date($('#rTo').value + 'T23:59:59').toISOString());
+  const s = qs.toString();
+  return s ? '?' + s : '';
+}
+
+async function loadProfit() {
+  if (!can('MANAGER')) return;
+  const p = await api('/api/admin/reports/profit' + rangeQS());
+  const row = (label, value) => `<tr><td>${label}</td><td style="text-align:right">${value}</td></tr>`;
+  $('#profitBody').innerHTML = `<h2 style="font-size:20px">Lucro estimado</h2>
+    <table class="wide"><tbody>
+      ${row('Faturamento bruto (pedidos ativos, com taxa de entrega)', brl(p.revenueCents))}
+      ${row('&nbsp;&nbsp;Vendas de produtos, já descontadas', brl(p.productSalesCents))}
+      ${row('&nbsp;&nbsp;Taxas de entrega', brl(p.deliveryFeesCents))}
+      ${row('Descontos concedidos (já abatidos acima)', brl(p.discountsCents))}
+      ${row('Custo dos produtos vendidos', '− ' + brl(p.cogsCents))}
+      ${row('Despesas operacionais do período', '− ' + brl(p.expensesCents))}
+      ${row('<b>Lucro estimado</b>', `<b>${brl(p.estimatedProfitCents)}</b> (${p.marginPct}%)`)}
+      ${row(`Cancelamentos: ${p.cancelledOrders} pedido(s)`, brl(p.cancelledCents))}
+    </tbody></table>
+    <p class="meta" style="margin-top:8px">${esc(p.note)}</p>`;
+}
+
+async function loadExpenses() {
+  if (!can('MANAGER')) return;
+  const { expenses } = await api('/api/admin/expenses');
+  $('#expBody').innerHTML = `<h2 style="font-size:20px">Despesas operacionais</h2>
+    <form id="expForm" class="row" style="align-items:flex-end;margin-bottom:12px">
+      <div style="flex:2;min-width:160px"><label for="exDesc">Descrição</label><input id="exDesc" required></div>
+      <div style="flex:1;min-width:120px"><label for="exCat">Categoria</label><input id="exCat" required placeholder="Aluguel, energia…"></div>
+      <div style="flex:1;min-width:110px"><label for="exAmt">Valor (R$)</label><input id="exAmt" inputmode="decimal" required></div>
+      <div style="flex:1;min-width:140px"><label for="exDate">Data</label><input id="exDate" type="date" required></div>
+      <button type="submit">Lançar despesa</button>
+    </form>
+    ${expenses.length
+      ? `<table class="wide"><thead><tr><th>Data</th><th>Descrição</th><th>Categoria</th><th>Valor</th><th></th></tr></thead><tbody>${expenses
+          .map((x) => `<tr data-id="${esc(x.id)}"><td>${new Date(x.occurredAt).toLocaleDateString('pt-BR')}</td><td>${esc(x.description)}</td><td>${esc(x.category)}</td><td>${brl(x.amountCents)}</td><td><button class="sm red exDel">Excluir</button></td></tr>`)
+          .join('')}</tbody></table>`
+      : '<p class="meta">Nenhuma despesa lançada no período.</p>'}`;
+  $('#exDate').value = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' });
+}
+
+$('#expBody').addEventListener('submit', async (e) => {
+  if (e.target.id !== 'expForm') return;
+  e.preventDefault();
+  const amountCents = toCents($('#exAmt').value);
+  if (amountCents <= 0) return toast('Informe um valor válido');
+  try {
+    await api('/api/admin/expenses', {
+      method: 'POST',
+      body: {
+        description: $('#exDesc').value.trim(),
+        category: $('#exCat').value.trim(),
+        amountCents,
+        occurredAt: new Date($('#exDate').value + 'T12:00:00').toISOString(),
+      },
+    });
+    toast('Despesa lançada');
+    await loadExpenses();
+    loadProfit().catch(() => {});
+  } catch (err) {
+    toast(err.message);
+  }
+});
+
+$('#expBody').addEventListener('click', async (e) => {
+  const b = e.target.closest('button.exDel');
+  if (!b) return;
+  if (!confirm('Excluir esta despesa?')) return;
+  try {
+    await api(`/api/admin/expenses/${encodeURIComponent(b.closest('tr').dataset.id)}`, { method: 'DELETE' });
+    toast('Despesa excluída');
+    await loadExpenses();
+    loadProfit().catch(() => {});
+  } catch (err) {
+    toast(err.message);
+  }
+});
+
+$('#rFrom').addEventListener('change', () => loadProfit().catch(() => {}));
+$('#rTo').addEventListener('change', () => loadProfit().catch(() => {}));
+
+setInterval(() => {
+  if (me && curView === 'orders') loadOrders().catch(() => {});
+}, 60000);
+
+boot();
+</script>
+</body>
+</html>

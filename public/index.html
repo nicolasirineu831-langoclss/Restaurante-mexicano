@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Coyote Culinária TexMex</title>
+<meta name="description" content="Cardápio digital e pedidos online do Coyote Culinária TexMex.">
+<meta name="theme-color" content="#1D4E89">
+<meta property="og:title" content="Coyote Culinária TexMex">
+<meta property="og:description" content="Cardápio digital e pedidos online do Coyote Culinária TexMex.">
+<meta property="og:type" content="restaurant">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%AE%3C/text%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#EFE6D2;--paper:#FBF6EA;--red:#D9342B;--red-d:#B2261F;--blue:#1D4E89;--ink:#2A1A12;--saffron:#E8A33D;--muted:#6B5444;--line:#DCCDB0}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:"DM Sans",system-ui,sans-serif;background:var(--cream);color:var(--ink);line-height:1.5}
+h1,h2,h3{font-family:"Alfa Slab One",Georgia,serif;font-weight:400;margin:0;line-height:1.15}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;border-radius:999px;padding:12px 22px;transition:transform .15s,background .2s,box-shadow .2s;min-height:44px}
+button:hover{transform:translateY(-2px)}
+button:active{transform:scale(.97)}
+:focus-visible{outline:3px solid var(--saffron);outline-offset:2px}
+.btn{background:var(--red);color:#fff;box-shadow:0 4px 0 var(--red-d)}
+.btn:hover{background:#c52d25}
+.btn-ghost{background:transparent;color:var(--blue);border:2px solid var(--blue)}
+.btn-sm{padding:8px 14px;font-size:14px;min-height:36px}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+input,select,textarea{width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:12px;background:var(--paper);font-size:16px}
+label{display:block;font-weight:500;font-size:14px;margin:12px 0 6px}
+.err{color:var(--red-d);font-size:13px;min-height:0;margin-top:4px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+header{position:sticky;top:0;z-index:20;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:12px 5vw}
+.logo{font-family:"Alfa Slab One",serif;font-size:22px;color:#fff;text-decoration:none;line-height:1}
+.logo small{display:block;font-family:"DM Sans";font-size:10px;letter-spacing:3px;color:var(--saffron);text-transform:uppercase;margin-top:4px}
+nav a{margin-left:20px;text-decoration:none;font-weight:500}
+nav a:hover{color:var(--saffron)}
+.hdr-actions{display:flex;align-items:center;gap:10px}
+.cart-btn{background:var(--saffron);color:var(--ink);position:relative}
+.badge{background:var(--red);color:#fff;border-radius:999px;font-size:12px;padding:1px 7px;margin-left:6px}
+
+.hero{position:relative;padding:72px 5vw 64px;text-align:center;background:var(--cream);overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background-image:radial-gradient(var(--red) 1.2px,transparent 1.4px);background-size:26px 26px;opacity:.08}
+.hero>*{position:relative}
+.eyebrow{font-size:13px;letter-spacing:4px;text-transform:uppercase;color:var(--red);font-weight:700}
+.hero h1{font-size:clamp(34px,6vw,64px);margin:14px auto;max-width:14ch;color:var(--ink)}
+.hero p{max-width:52ch;margin:0 auto 26px;color:var(--muted);font-size:18px}
+.hero .actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.strip{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:28px;font-size:14px;color:var(--muted)}
+.strip span{background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:6px 14px}
+.demo-note{background:var(--saffron);color:var(--ink);padding:10px 5vw;font-size:14px;text-align:center}
+
+section{padding:56px 5vw}
+.sec-head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.sec-head h2{font-size:clamp(26px,4vw,38px)}
+.tools{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+.tools input{max-width:300px;flex:1}
+.tools select{max-width:200px;flex:0 0 auto;width:auto}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.chip{background:var(--paper);color:var(--ink);border:2px solid var(--line);padding:8px 16px;min-height:40px;font-size:14px}
+.chip[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#fff}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:20px}
+.card{background:var(--paper);border-radius:20px;overflow:hidden;border:1px solid var(--line);display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s}
+.card:hover{transform:translateY(-4px);box-shadow:0 12px 24px rgba(42,26,18,.12)}
+.ph{height:150px;display:flex;align-items:center;justify-content:center;font-size:58px;background:var(--blue);position:relative}
+.ph.warm{background:var(--red)}.ph.gold{background:var(--saffron)}.ph.green{background:#4E7A3A}
+.ph .tag{position:absolute;top:10px;left:10px;background:var(--paper);color:var(--ink);font-size:12px;font-weight:700;border-radius:999px;padding:3px 10px}
+.card-b{padding:16px 18px 18px;display:flex;flex-direction:column;gap:6px;flex:1}
+.card-b h3{font-size:20px}
+.card-b p{margin:0;color:var(--muted);font-size:14px;flex:1}
+.meta{font-size:13px;color:var(--muted)}
+.row{display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:8px}
+.price{font-family:"Alfa Slab One",serif;font-size:20px;color:var(--red)}
+.off{opacity:.55}
+
+.about{background:var(--blue);color:#fff;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px}
+.about h2{font-size:clamp(26px,4vw,36px);margin-bottom:10px}
+.about p{margin:0 0 10px;opacity:.92}
+.facts{display:grid;gap:12px}
+.fact{background:rgba(255,255,255,.1);border-radius:16px;padding:16px 18px}
+.fact b{display:block;font-family:"Alfa Slab One",serif;font-weight:400;font-size:22px;color:var(--saffron)}
+
+footer{background:var(--ink);color:#EFE6D2;padding:40px 5vw 28px;font-size:14px}
+footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px}
+footer h3{font-size:18px;color:var(--saffron);margin-bottom:8px}
+footer a{text-decoration:none;opacity:.9}
+footer small{display:block;margin-top:24px;opacity:.6}
+
+.overlay{position:fixed;inset:0;background:rgba(42,26,18,.55);display:none;z-index:40}
+.overlay.open{display:block}
+.panel{position:fixed;top:0;right:0;bottom:0;width:min(440px,100%);background:var(--cream);z-index:50;transform:translateX(105%);transition:transform .3s ease;display:flex;flex-direction:column;box-shadow:-10px 0 30px rgba(0,0,0,.2)}
+.panel.open{transform:none}
+.panel-h{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;background:var(--blue);color:#fff}
+.panel-h h2{font-size:22px}
+.panel-b{overflow:auto;padding:16px 20px;flex:1}
+.panel-f{padding:16px 20px;border-top:1px solid var(--line);background:var(--paper)}
+.line{display:grid;grid-template-columns:1fr auto;gap:6px 10px;padding:12px 0;border-bottom:1px dashed var(--line)}
+.line b{font-weight:700}
+.line small{color:var(--muted);display:block}
+.qty{display:flex;align-items:center;gap:8px;grid-column:1/-1}
+.qty button{min-width:40px;min-height:40px;padding:0;background:var(--paper);border:2px solid var(--line);color:var(--ink)}
+.linkbtn{background:none;color:var(--red-d);padding:6px;min-height:40px;font-size:14px;text-decoration:underline;border-radius:8px}
+.sum{display:flex;justify-content:space-between;padding:4px 0;font-size:15px}
+.sum.total{font-size:19px;font-weight:700;border-top:2px solid var(--ink);margin-top:6px;padding-top:8px}
+.cupom{display:flex;gap:8px;margin:10px 0}
+.cupom input{text-transform:uppercase}
+.cupom .btn-sm{white-space:nowrap}
+.radios{display:flex;gap:8px;flex-wrap:wrap}
+.radios label{margin:0;display:inline-flex;align-items:center;gap:8px;background:var(--paper);border:2px solid var(--line);border-radius:12px;padding:10px 14px;cursor:pointer;font-weight:500}
+.radios input{width:auto}
+.hidden{display:none !important}
+.fieldset{border:0;padding:0;margin:0}
+.fieldset legend{font-weight:700;margin-bottom:4px;font-size:14px}
+
+.modal{position:fixed;left:50%;bottom:0;transform:translate(-50%,110%);width:min(520px,100%);max-height:88vh;overflow:auto;background:var(--paper);border-radius:24px 24px 0 0;z-index:60;padding:22px;transition:transform .3s ease;box-shadow:0 -10px 30px rgba(0,0,0,.2)}
+.modal.open{transform:translate(-50%,0)}
+.modal .ph{height:160px;border-radius:16px;margin-bottom:14px}
+.opt{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px;gap:10px}
+.opt label{margin:0;display:flex;gap:10px;align-items:center;font-weight:400;cursor:pointer}
+.opt input{width:20px;height:20px}
+.opt input[type=number]{width:72px}
+.modal-f{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;flex-wrap:wrap}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,140%);background:var(--ink);color:#fff;padding:12px 20px;border-radius:999px;z-index:80;transition:transform .3s;font-size:15px;max-width:92vw;text-align:center}
+.toast.show{transform:translate(-50%,0)}
+.order-ok{text-align:center;padding:10px 0}
+.order-ok .num{font-family:"Alfa Slab One",serif;font-size:28px;color:var(--red);margin:8px 0}
+.steps{list-style:none;padding:0;margin:18px 0;text-align:left}
+.steps li{display:flex;gap:10px;align-items:center;padding:6px 0;color:var(--muted)}
+.steps li::before{content:"";width:14px;height:14px;border-radius:50%;border:2px solid var(--line);flex:none}
+.steps li.done{color:var(--ink);font-weight:500}
+.steps li.done::before{background:var(--green,#4E7A3A);border-color:#4E7A3A}
+
+@media (max-width:720px){nav{display:none}header{padding:10px 4vw}section{padding:40px 4vw}}
+@media (prefers-reduced-motion:reduce){*{transition:none !important;scroll-behavior:auto !important}}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="#top" id="top">Coyote<small>Culinária TexMex</small></a>
+  <nav aria-label="Principal">
+    <a href="#cardapio">Cardápio</a>
+    <a href="#sobre">Sobre</a>
+    <a href="#contato">Contato</a>
+  </nav>
+  <div class="hdr-actions">
+    <button class="btn-ghost btn-sm" id="accountBtn" style="color:#fff;border-color:#fff">Entrar</button>
+    <button class="cart-btn" id="openCart" aria-label="Abrir carrinho">🛒 Carrinho<span class="badge" id="cartCount">0</span></button>
+  </div>
+</header>
+
+<div class="demo-note" role="note" id="demoNote">Carregando informações do restaurante…</div>
+
+<main>
+<div class="hero">
+  <div class="eyebrow">Tacos · Burritos · Nachos · Fajitas</div>
+  <h1>Sabor de fogo, alma mexicana</h1>
+  <p>Ingredientes frescos, temperos da casa e a energia do TexMex brasileiro, servidos quentes na sua mesa ou na sua porta.</p>
+  <div class="actions">
+    <a class="btn" href="#cardapio" style="text-decoration:none;padding:14px 26px;border-radius:999px;color:#fff">Faça seu pedido</a>
+    <a class="btn btn-ghost" href="#cardapio" style="text-decoration:none;padding:12px 24px;border-radius:999px">Conheça nosso cardápio</a>
+  </div>
+  <div class="strip">
+    <span>⭐ 4,6 no Google</span>
+    <span>Delivery e retirada</span>
+    <span>Pix, cartão e dinheiro</span>
+  </div>
+</div>
+
+<section id="cardapio" aria-labelledby="menuTitle">
+  <div class="sec-head">
+    <div><h2 id="menuTitle">Cardápio</h2><p class="meta">Toque em um prato para personalizar.</p></div>
+  </div>
+  <div class="tools">
+    <label class="sr-only" for="search">Pesquisar produtos</label>
+    <input id="search" type="search" placeholder="Pesquisar prato ou ingrediente">
+    <label class="sr-only" for="sort">Ordenar</label>
+    <select id="sort">
+      <option value="pop">Mais pedidos</option>
+      <option value="asc">Menor preço</option>
+      <option value="desc">Maior preço</option>
+      <option value="name">Nome A-Z</option>
+    </select>
+  </div>
+  <div class="chips" id="chips" role="group" aria-label="Filtrar por categoria"></div>
+  <div class="grid" id="menu"></div>
+</section>
+
+<section id="sobre" class="about" aria-labelledby="aboutTitle">
+  <div>
+    <h2 id="aboutTitle">Nossa história</h2>
+    <p>Texto institucional a ser fornecido pelo restaurante: origem, filosofia e inspiração mexicana.</p>
+    <p>A cozinha prepara cada prato no momento do pedido, com molhos feitos na casa e tortillas em cada ocasião.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><b>4,6</b>média de avaliações no Google (306)</div>
+    <div class="fact"><b>Delivery</b>e retirada no estabelecimento</div>
+    <div class="fact"><b>Ingredientes</b>com alergênicos informados em cada prato</div>
+  </div>
+</section>
+
+<section id="contato" aria-labelledby="contactTitle">
+  <h2 id="contactTitle">Contato e horários</h2>
+  <p class="meta">Endereço, telefone, WhatsApp e horários serão preenchidos nas Configurações do restaurante.</p>
+</section>
+</main>
+
+<footer>
+  <div class="cols">
+    <div><h3>Coyote Culinária TexMex</h3><p>Restaurante mexicano.</p></div>
+    <div><h3>Atendimento</h3><p id="fContact">Contato a confirmar</p></div>
+    <div><h3>Links</h3><p><a href="#cardapio">Cardápio</a><br><a href="#sobre">Sobre</a><br><a href="privacidade.html">Política de privacidade</a><br><a href="termos.html">Termos de uso</a><br><a href="alergenicos.html">Alergênicos</a></p></div>
+  </div>
+  <small>© 2026 Coyote Culinária TexMex. Informações sobre alergênicos: consulte o restaurante.</small>
+</footer>
+
+<div class="overlay" id="overlay"></div>
+
+<aside class="panel" id="cartPanel" aria-labelledby="cartTitle" aria-hidden="true">
+  <div class="panel-h">
+    <h2 id="cartTitle">Seu carrinho</h2>
+    <button class="btn-ghost btn-sm" id="closeCart" style="color:#fff;border-color:#fff" aria-label="Fechar carrinho">Fechar</button>
+  </div>
+  <div class="panel-b" id="cartBody"></div>
+  <div class="panel-f" id="cartFoot"></div>
+</aside>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const fmt=c=>(c/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const toCents=s=>Math.round(parseFloat(String(s||'0').replace(/\./g,'').replace(',','.'))*100)||0;
+const store={get(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v??d}catch{return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
+const ICON={Tacos:['warm','🌮'],Burritos:['blue','🌯'],Nachos:['gold','🧀'],Quesadillas:['warm','🫓'],Fajitas:['green','🥘'],Tostadas:['blue','🐟'],Combos:['warm','🎉'],Sobremesas:['gold','🍩'],Bebidas:['green','🍋'],Molhos:['green','🥑']};
+const STATUS={RECEIVED:'Recebido',CONFIRMED:'Confirmado',PREPARING:'Em preparação',READY:'Pronto',OUT_FOR_DELIVERY:'Saiu para entrega',DELIVERED:'Entregue',PICKED_UP:'Retirado',CANCELLED:'Cancelado'};
+const PAY={PIX:'Pix',CREDIT_CARD:'Cartão de crédito',DEBIT_CARD:'Cartão de débito',CASH:'Dinheiro'};
+const cartInit=store.get('coyote_cart',[]);
+const S={menu:[],products:new Map(),settings:null,cat:'Todos',q:'',sort:'pop',cart:Array.isArray(cartInit)?cartInit:[],coupon:store.get('coyote_coupon','')||'',user:null,es:null};
+
+const saveCart=()=>{store.set('coyote_cart',S.cart);store.set('coyote_coupon',S.coupon);$('#cartCount').textContent=S.cart.reduce((s,l)=>s+l.qty,0)};
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2600)}
+
+async function api(path,{method='GET',body,headers={}}={}){
+  const r=await fetch(path,{method,headers:{...(body?{'Content-Type':'application/json'}:{}),...headers},body:body?JSON.stringify(body):undefined});
+  let d={}; try{d=await r.json()}catch{}
+  if(!r.ok){const e=new Error(d.error||'Não foi possível concluir. Tente novamente.');e.details=d.details;throw e}
+  return d;
+}
+
+const unitOf=l=>{const p=S.products.get(l.productId);return p?p.priceCents+p.addons.filter(a=>l.addonIds.includes(a.id)).reduce((s,a)=>s+a.priceCents,0):0};
+const subtotal=()=>S.cart.reduce((s,l)=>s+unitOf(l)*l.qty,0);
+
+async function loadAll(){
+  try{
+    const [m,s]=await Promise.all([api('/api/menu'),api('/api/restaurant')]);
+    S.menu=m.categories; S.settings=s;
+    S.products=new Map(S.menu.flatMap(c=>c.products.map(p=>[p.id,{...p,cat:c.name}])));
+    S.cart=S.cart.filter(l=>S.products.has(l.productId)); saveCart();
+    const st=s, parts=[];
+    if(st.phone) parts.push('Telefone: '+esc(st.phone));
+    if(st.whatsapp) parts.push('WhatsApp: '+esc(st.whatsapp));
+    if(st.address) parts.push(esc(st.address));
+    if(st.hours) parts.push('Horário: '+esc(st.hours));
+    $('#fContact').innerHTML=parts.length?parts.join('<br>'):'Contato a confirmar';
+    $('#demoNote').textContent=st.acceptingOrders?'Pedidos online abertos. Pagamento online ainda não está ativo: nenhuma cobrança é feita pelo site.':'Pedidos online indisponíveis no momento.';
+    renderChips(); renderMenu();
+  }catch(e){
+    $('#menu').innerHTML='<p class="meta">Não foi possível carregar o cardápio agora. Tente novamente em instantes.</p>';
+  }
+}
+
+function renderChips(){
+  const cats=['Todos',...new Set(S.menu.map(c=>c.name))];
+  $('#chips').innerHTML=cats.map(c=>`<button class="chip" aria-pressed="${c===S.cat}" data-cat="${esc(c)}">${esc(c)}</button>`).join('');
+}
+function renderMenu(){
+  let items=[...S.products.values()].filter(p=>(S.cat==='Todos'||p.cat===S.cat)&&(!S.q||(p.name+' '+p.ingredients+' '+p.description).toLowerCase().includes(S.q)));
+  if(S.sort==='asc')items.sort((a,b)=>a.priceCents-b.priceCents);
+  else if(S.sort==='desc')items.sort((a,b)=>b.priceCents-a.priceCents);
+  else if(S.sort==='name')items.sort((a,b)=>a.name.localeCompare(b.name,'pt-BR'));
+  $('#menu').innerHTML=items.length?items.map(p=>{const [ph,ic]=ICON[p.cat]||['blue','🌮'];return `<article class="card${p.available?'':' off'}"><div class="ph ${ph}" aria-hidden="true">${ic}${p.available?'':'<span class="tag">Esgotado</span>'}</div><div class="card-b"><h3>${esc(p.name)}</h3><p>${esc(p.description)}</p><p class="meta">Ingredientes: ${esc(p.ingredients)}</p><div class="row"><span class="price">${fmt(p.priceCents)}</span><span class="meta">⏱ ${p.prepMinutes} min</span></div><button class="btn btn-sm" data-open="${esc(p.id)}" ${p.available?'':'disabled'}>${p.available?'Adicionar':'Indisponível'}</button></div></article>`}).join(''):'<p class="meta">Nenhum prato encontrado.</p>';
+}
+
+function openProduct(id){
+  const p=S.products.get(id); if(!p||!p.available) return;
+  const [ph,ic]=ICON[p.cat]||['blue','🌮'];
+  $('#modal').innerHTML=`<div class="ph ${ph}" style="height:150px;border-radius:16px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;font-size:56px" aria-hidden="true">${ic}</div>
+  <h2 id="mTitle" style="font-size:24px">${esc(p.name)}</h2>
+  <p class="meta">${esc(p.description)}</p><p class="meta"><b>Ingredientes:</b> ${esc(p.ingredients)}</p>
+  <fieldset style="border:0;padding:0;margin:12px 0"><legend style="font-weight:700">Personalize (opcional)</legend>
+  ${p.addons.length?p.addons.map(a=>`<div class="opt"><label><input type="checkbox" data-ad="${esc(a.id)}"> ${esc(a.name)}</label><span>+ ${fmt(a.priceCents)}</span></div>`).join(''):'<p class="meta">Sem adicionais para este item.</p>'}</fieldset>
+  <label for="mObs">Observações</label><textarea id="mObs" rows="2" maxlength="200" placeholder="Ex.: sem cebola"></textarea>
+  <div class="row" style="margin-top:14px"><div class="qty"><button type="button" id="qm" aria-label="Diminuir">−</button><span id="qv" aria-live="polite">1</span><button type="button" id="qp" aria-label="Aumentar">+</button></div><button class="btn" id="addBtn"></button></div>
+  <button class="linkbtn" id="closeM" style="margin-top:10px">Cancelar</button>`;
+  let qty=1;
+  const calc=()=>{let u=p.priceCents;document.querySelectorAll('[data-ad]:checked').forEach(c=>{u+=p.addons.find(a=>a.id===c.dataset.ad).priceCents});return u*qty};
+  const upd=()=>{$('#qv').textContent=qty;$('#addBtn').textContent='Adicionar · '+fmt(calc())};
+  $('#qm').onclick=()=>{if(qty>1){qty--;upd()}};
+  $('#qp').onclick=()=>{if(qty<20){qty++;upd()}};
+  document.querySelectorAll('[data-ad]').forEach(c=>c.onchange=upd);
+  $('#addBtn').onclick=()=>{
+    const addonIds=[...document.querySelectorAll('[data-ad]:checked')].map(c=>c.dataset.ad).sort();
+    const notes=$('#mObs').value.trim();
+    const ex=S.cart.find(l=>l.productId===id&&(l.notes||'')===notes&&JSON.stringify(l.addonIds)===JSON.stringify(addonIds));
+    if(ex) ex.qty=Math.min(20,ex.qty+qty); else S.cart.push({productId:id,qty,addonIds,notes});
+    saveCart(); closeModal(); toast(`${p.name} adicionado ao carrinho`);
+  };
+  upd(); $('#closeM').onclick=closeModal;
+  $('#modal').classList.add('open'); $('#overlay').classList.add('open'); $('#qp').focus();
+}
+function closeModal(){$('#modal').classList.remove('open');if(!$('#cartPanel').classList.contains('open'))$('#overlay').classList.remove('open')}
+function openPanel(){$('#cartPanel').classList.add('open');$('#cartPanel').setAttribute('aria-hidden','false');$('#overlay').classList.add('open')}
+function closePanel(){
+  $('#cartPanel').classList.remove('open');$('#cartPanel').setAttribute('aria-hidden','true');
+  if(S.es){S.es.close();S.es=null}
+  if(!$('#modal').classList.contains('open'))$('#overlay').classList.remove('open');
+}
+
+function show(view,arg){
+  if(view!=='track'&&S.es){S.es.close();S.es=null}
+  openPanel();
+  $('#cartTitle').textContent={cart:'Seu carrinho',checkout:'Finalizar pedido',account:'Minha conta',track:'Acompanhar pedido'}[view];
+  $('#cartFoot').innerHTML='';
+  ({cart:viewCart,checkout:viewCheckout,account:viewAccount,track:viewTrack})[view](arg);
+}
+
+function viewCart(){
+  if(!S.cart.length){
+    $('#cartBody').innerHTML='<p class="meta">Seu carrinho está vazio. Escolha um prato no cardápio.</p>';
+    $('#cartFoot').innerHTML='<button class="btn btn-ghost" style="width:100%" data-act="close">Ver cardápio</button>';
+    saveCart(); return;
+  }
+  $('#cartBody').innerHTML=S.cart.map((l,i)=>{
+    const p=S.products.get(l.productId);
+    const names=l.addonIds.map(id=>p.addons.find(a=>a.id===id)?.name).filter(Boolean);
+    return `<div class="line"><div><b>${esc(p.name)}</b>${names.length?`<small>+ ${esc(names.join(', '))}</small>`:''}${l.notes?`<small>Obs.: ${esc(l.notes)}</small>`:''}</div><div style="text-align:right"><b>${fmt(unitOf(l)*l.qty)}</b></div><div class="qty"><button data-act="dec" data-i="${i}" aria-label="Diminuir quantidade">−</button><span>${l.qty}</span><button data-act="inc" data-i="${i}" aria-label="Aumentar quantidade">+</button><button class="linkbtn" data-act="rm" data-i="${i}">Remover</button></div></div>`;
+  }).join('');
+  const st=S.settings||{}, sub=subtotal(), min=st.minOrderCents||0;
+  const canOrder=!!st.acceptingOrders&&sub>=min;
+  $('#cartFoot').innerHTML=`<div class="cupom"><label class="sr-only" for="cup">Cupom de desconto</label><input id="cup" placeholder="Cupom de desconto" value="${esc(S.coupon)}"><button class="btn btn-ghost btn-sm" data-act="coupon">Aplicar</button></div>
+  <div class="sum"><span>Subtotal</span><span>${fmt(sub)}</span></div>
+  <p class="meta">Desconto e taxa de entrega são calculados ao finalizar.</p>
+  <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn-ghost btn-sm" data-act="clear" style="flex:1">Limpar</button><button class="btn" data-act="checkout" style="flex:2" ${canOrder?'':'disabled'}>Finalizar pedido</button></div>
+  ${!st.acceptingOrders?'<p class="err" style="margin-top:8px">Pedidos online indisponíveis agora.</p>':''}
+  ${st.acceptingOrders&&sub<min?`<p class="meta">Pedido mínimo: ${fmt(min)}</p>`:''}`;
+  saveCart();
+}
+
+function viewCheckout(){
+  $('#cartBody').innerHTML=`<form data-form="order" novalidate id="checkout">
+    <p class="meta">Itens: <b>${fmt(subtotal())}</b> · a taxa de entrega é somada ao total final.</p>
+    <label for="ck-name">Nome</label><input id="ck-name" name="name" autocomplete="name" required value="${esc(S.user?.name||'')}">
+    <label for="ck-phone">Telefone / WhatsApp</label><input id="ck-phone" name="phone" type="tel" autocomplete="tel" required placeholder="(19) 99999-9999" value="${esc(S.user?.phone||'')}">
+    <fieldset style="border:0;padding:0;margin:12px 0 0"><legend style="font-weight:700;font-size:14px">Atendimento</legend>
+      <div class="radios"><label><input type="radio" name="type" value="DELIVERY" checked> Delivery</label><label><input type="radio" name="type" value="PICKUP"> Retirada</label></div>
+    </fieldset>
+    <div id="addr">
+      <label for="ck-zip">CEP</label><input id="ck-zip" name="zip" inputmode="numeric" autocomplete="postal-code" placeholder="00000-000">
+      <label for="ck-street">Endereço</label><input id="ck-street" name="street" autocomplete="street-address">
+      <div class="row"><div style="flex:1"><label for="ck-number">Número</label><input id="ck-number" name="number"></div><div style="flex:2"><label for="ck-nb">Bairro</label><input id="ck-nb" name="neighborhood"></div></div>
+      <label for="ck-city">Cidade</label><input id="ck-city" name="city">
+      <label for="ck-comp">Complemento</label><input id="ck-comp" name="complement">
+      <label for="ck-ref">Referência</label><input id="ck-ref" name="reference" placeholder="Ex.: próximo ao mercado">
+    </div>
+    <label for="ck-pay">Forma de pagamento</label>
+    <select id="ck-pay" name="payment"><option value="PIX">Pix</option><option value="CREDIT_CARD">Cartão de crédito</option><option value="DEBIT_CARD">Cartão de débito</option><option value="CASH">Dinheiro</option></select>
+    <div id="chgBox" class="hidden"><label for="ck-chg">Troco para quanto? (opcional)</label><input id="ck-chg" name="change" inputmode="decimal" placeholder="Ex.: 100,00"></div>
+    <label for="ck-notes">Observações do pedido</label><textarea id="ck-notes" name="notes" rows="2" maxlength="300"></textarea>
+    <p class="meta" style="margin-top:12px">Pagamento online ainda não está ativo. Nenhuma cobrança é feita pelo site; o pagamento é combinado com o restaurante.</p>
+    <div class="err" id="ckErr" role="alert"></div>
+    <div class="row" style="margin-top:12px"><button type="button" class="btn-ghost btn-sm" data-act="back">Voltar</button><button class="btn" type="submit" id="ckSubmit">Confirmar pedido</button></div>
+  </form>`;
+  const form=$('#checkout');
+  const syncType=()=>{const del=form.querySelector('input[name=type]:checked').value==='DELIVERY';$('#addr').classList.toggle('hidden',!del)};
+  form.querySelectorAll('input[name=type]').forEach(r=>r.addEventListener('change',syncType));
+  $('#ck-pay').addEventListener('change',e=>$('#chgBox').classList.toggle('hidden',e.target.value!=='CASH'));
+  $('#ck-name').focus();
+}
+
+async function placeOrder(form){
+  const errEl=$('#ckErr'), btn=$('#ckSubmit');
+  errEl.textContent='';
+  const f=Object.fromEntries(new FormData(form));
+  const type=form.querySelector('input[name=type]:checked').value;
+  if(f.phone.replace(/\D/g,'').length<10){errEl.textContent='Informe um telefone válido com DDD.';return}
+  if(type==='DELIVERY'&&(!f.zip.trim()||!f.street.trim()||!f.number.trim()||!f.neighborhood.trim()||!f.city.trim())){errEl.textContent='Preencha o endereço de entrega.';return}
+  const body={
+    customer:{name:f.name.trim(),phone:f.phone.trim()},
+    type,payment:f.payment,
+    notes:f.notes.trim()||undefined,
+    couponCode:S.coupon||undefined,
+    items:S.cart.map(l=>({productId:l.productId,quantity:l.qty,addonIds:l.addonIds,notes:l.notes||undefined})),
+  };
+  if(type==='DELIVERY') body.address={zip:f.zip.trim(),street:f.street.trim(),number:f.number.trim(),neighborhood:f.neighborhood.trim(),city:f.city.trim(),complement:f.complement.trim()||undefined,reference:f.reference.trim()||undefined};
+  if(f.payment==='CASH'&&f.change.trim()) body.changeForCents=toCents(f.change);
+  btn.disabled=true;
+  try{
+    const {order}=await api('/api/orders',{method:'POST',body});
+    const list=store.get('coyote_orders',[]);
+    list.unshift({number:order.number,token:order.trackToken});
+    store.set('coyote_orders',list.slice(0,20));
+    S.cart=[]; S.coupon=''; saveCart();
+    toast('Pedido enviado ao restaurante');
+    show('track',order.number);
+  }catch(err){
+    errEl.textContent=err.message; btn.disabled=false;
+  }
+}
+
+async function viewTrack(number){
+  const entry=store.get('coyote_orders',[]).find(o=>o.number===number);
+  if(!entry){
+    $('#cartBody').innerHTML='<p class="meta">Este pedido não está salvo neste aparelho. Entre na sua conta para ver seus pedidos.</p><button class="btn" data-act="account" style="margin-top:10px">Minha conta</button>';
+    return;
+  }
+  const fetchTrack=()=>api(`/api/orders/${encodeURIComponent(number)}/track`,{headers:{'x-track-token':entry.token}}).then(d=>renderTrack(d.order));
+  await fetchTrack();
+  if(S.es) S.es.close();
+  S.es=new EventSource(`/api/orders/${encodeURIComponent(number)}/stream?token=${encodeURIComponent(entry.token)}`);
+  S.es.addEventListener('status',()=>fetchTrack().catch(()=>{}));
+}
+
+function renderTrack(o){
+  const del=o.type==='DELIVERY';
+  const steps=del?['Pedido recebido','Pedido confirmado','Em preparação','Saiu para entrega','Pedido entregue']:['Pedido recebido','Pedido confirmado','Em preparação','Pronto para retirada','Retirado'];
+  const idx={RECEIVED:0,CONFIRMED:1,PREPARING:2,READY:del?2:3,OUT_FOR_DELIVERY:3,DELIVERED:4,PICKED_UP:4}[o.status];
+  const cancelled=o.status==='CANCELLED';
+  $('#cartBody').innerHTML=`<p class="meta">Pedido <b>${esc(o.number)}</b> · ${new Date(o.createdAt).toLocaleString('pt-BR')}</p>
+  ${cancelled?'<p class="err" role="status"><b>Pedido cancelado.</b> Entre em contato com o restaurante se tiver dúvidas.</p>':`<p class="meta">Status atual: <b>${STATUS[o.status]}</b></p>`}
+  <ol class="steps" aria-label="Andamento do pedido">${steps.map((s,i)=>`<li class="${!cancelled&&i<=idx?'done':''}">${s}</li>`).join('')}</ol>
+  <div class="line"><div>${o.items.map(i=>`<small>${i.quantity}× ${esc(i.name)}${i.addons.length?' + '+esc(i.addons.join(', ')):''}</small>`).join('<br>')}</div><div></div></div>
+  <p class="sum"><span>Total</span><b>${fmt(o.totalCents)}</b></p>
+  <p class="meta">Pagamento: ${PAY[o.paymentMethod]}</p>
+  ${o.address?`<p class="meta">Entrega: ${esc(o.address.street)}, ${esc(o.address.number)} · ${esc(o.address.neighborhood)}</p>`:''}
+  <p class="meta">Atualizado em tempo real.</p>`;
+}
+
+function viewAccount(arg={}){
+  if(S.user){
+    $('#cartBody').innerHTML=`<p>Olá, <b>${esc(S.user.name)}</b></p><h3 style="font-size:18px;margin:14px 0 8px">Meus pedidos</h3><div id="myOrders"><p class="meta">Carregando…</p></div>`;
+    $('#cartFoot').innerHTML='<button class="btn-ghost btn-sm" data-act="logout" style="width:100%">Sair da conta</button>';
+    api('/api/orders/mine').then(({orders})=>{
+      $('#myOrders').innerHTML=orders.length?orders.map(o=>`<div class="line"><div><b>${esc(o.number)}</b><small>${new Date(o.createdAt).toLocaleDateString('pt-BR')} · ${STATUS[o.status]}</small></div><div style="text-align:right"><b>${fmt(o.totalCents)}</b></div></div>`).join(''):'<p class="meta">Você ainda não fez pedidos.</p>';
+    }).catch(err=>{$('#myOrders').textContent=err.message});
+    return;
+  }
+  const mode=arg.mode||'login';
+  const forms={
+    login:`<form data-form="login"><label for="a-email">E-mail</label><input id="a-email" name="email" type="email" autocomplete="username" required><label for="a-pass">Senha</label><input id="a-pass" name="password" type="password" autocomplete="current-password" required><button class="btn" type="submit" style="width:100%;margin-top:14px">Entrar</button><p class="meta" style="margin-top:12px"><a href="#" data-act="mode" data-m="forgot">Esqueci minha senha</a> · <a href="#" data-act="mode" data-m="register">Criar conta</a></p></form>`,
+    register:`<form data-form="register"><label for="r-name">Nome</label><input id="r-name" name="name" autocomplete="name" required><label for="r-email">E-mail</label><input id="r-email" name="email" type="email" autocomplete="email" required><label for="r-phone">Telefone (opcional)</label><input id="r-phone" name="phone" type="tel" autocomplete="tel"><label for="r-pass">Senha (mínimo 8 caracteres)</label><input id="r-pass" name="password" type="password" autocomplete="new-password" minlength="8" required><button class="btn" type="submit" style="width:100%;margin-top:14px">Criar conta</button><p class="meta" style="margin-top:12px">Já tem conta? <a href="#" data-act="mode" data-m="login">Entrar</a></p></form>`,
+    forgot:`<form data-form="forgot"><p class="meta">Informe seu e-mail. Enviaremos um link para criar uma nova senha.</p><label for="f-email">E-mail</label><input id="f-email" name="email" type="email" autocomplete="username" required><button class="btn" type="submit" style="width:100%;margin-top:14px">Enviar link</button><p class="meta" style="margin-top:12px"><a href="#" data-act="mode" data-m="login">Voltar ao login</a></p></form>`,
+    reset:`<form data-form="reset"><input type="hidden" name="token" value="${esc(arg.token||'')}"><label for="p-pass">Nova senha (mínimo 8 caracteres)</label><input id="p-pass" name="password" type="password" autocomplete="new-password" minlength="8" required><button class="btn" type="submit" style="width:100%;margin-top:14px">Salvar nova senha</button></form>`,
+  };
+  $('#cartBody').innerHTML=forms[mode]+'<div class="err" id="aErr" role="alert"></div>';
+  const first=$('#cartBody input:not([type=hidden])'); first?.focus();
+}
+
+function updateAccountBtn(){$('#accountBtn').textContent=S.user?'Minha conta':'Entrar'}
+
+// Eventos
+$('#openCart').addEventListener('click',()=>show('cart'));
+$('#accountBtn').addEventListener('click',()=>show('account'));
+$('#closeCart').addEventListener('click',closePanel);
+$('#overlay').addEventListener('click',()=>{closePanel();closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closePanel();closeModal()}});
+$('#chips').addEventListener('click',e=>{const b=e.target.closest('[data-cat]');if(b){S.cat=b.dataset.cat;renderChips();renderMenu()}});
+$('#menu').addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(b)openProduct(b.dataset.open)});
+$('#search').addEventListener('input',e=>{S.q=e.target.value.trim().toLowerCase();renderMenu()});
+$('#sort').addEventListener('change',e=>{S.sort=e.target.value;renderMenu()});
+
+$('#cartPanel').addEventListener('click',async e=>{
+  const el=e.target.closest('[data-act]'); if(!el) return;
+  const a=el.dataset.act, i=Number(el.dataset.i);
+  if(a==='inc'){S.cart[i].qty=Math.min(20,S.cart[i].qty+1);viewCart()}
+  else if(a==='dec'){if(S.cart[i].qty>1){S.cart[i].qty--;viewCart()}}
+  else if(a==='rm'){S.cart.splice(i,1);viewCart();toast('Item removido')}
+  else if(a==='clear'){if(confirm('Limpar todo o carrinho?')){S.cart=[];S.coupon='';viewCart()}}
+  else if(a==='coupon'){e.preventDefault();S.coupon=$('#cup').value.trim().toUpperCase();saveCart();toast(S.coupon?'Cupom registrado. Ele é validado ao finalizar.':'Cupom removido')}
+  else if(a==='checkout'){show('checkout')}
+  else if(a==='back'){show('cart')}
+  else if(a==='close'){closePanel()}
+  else if(a==='account'){show('account')}
+  else if(a==='mode'){e.preventDefault();show('account',{mode:el.dataset.m})}
+  else if(a==='logout'){await api('/api/auth/logout',{method:'POST'}).catch(()=>{});S.user=null;updateAccountBtn();toast('Você saiu da conta');show('account')}
+});
+
+$('#cartPanel').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const form=e.target, kind=form.dataset.form;
+  if(kind==='order') return placeOrder(form);
+  const f=Object.fromEntries(new FormData(form));
+  const err=$('#aErr'); if(err) err.textContent='';
+  try{
+    if(kind==='login'){S.user=(await api('/api/auth/login',{method:'POST',body:f})).user;updateAccountBtn();toast('Bem-vindo de volta!');show('account')}
+    else if(kind==='register'){S.user=(await api('/api/auth/register',{method:'POST',body:f})).user;updateAccountBtn();toast('Conta criada!');show('account')}
+    else if(kind==='forgot'){const d=await api('/api/auth/forgot',{method:'POST',body:f});form.innerHTML=`<p>${esc(d.message)}</p>`}
+    else if(kind==='reset'){await api('/api/auth/reset',{method:'POST',body:f});toast('Senha alterada. Entre com a nova senha.');show('account',{mode:'login'})}
+  }catch(x){if(err)err.textContent=x.message}
+});
+
+(async()=>{
+  const resetToken=new URLSearchParams(location.search).get('reset');
+  if(resetToken) history.replaceState(null,'',location.pathname);
+  await Promise.all([
+    loadAll(),
+    api('/api/auth/me').then(d=>{S.user=d.user}).catch(()=>{S.user=null}),
+  ]);
+  updateAccountBtn();
+  saveCart();
+  if(resetToken) show('account',{mode:'reset',token:resetToken});
+})();
+
+</script>
+</body>
+</html>
