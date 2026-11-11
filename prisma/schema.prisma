@@ -1,0 +1,288 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  MANAGER
+  STAFF
+  CUSTOMER
+}
+
+enum OrderType {
+  DELIVERY
+  PICKUP
+}
+
+enum PaymentMethod {
+  PIX
+  CREDIT_CARD
+  DEBIT_CARD
+  CASH
+}
+
+enum OrderStatus {
+  RECEIVED
+  CONFIRMED
+  PREPARING
+  READY
+  OUT_FOR_DELIVERY
+  DELIVERED
+  PICKED_UP
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  APPROVED
+  FAILED
+  REFUNDED
+}
+
+model User {
+  id           String        @id @default(cuid())
+  email        String        @unique
+  passwordHash String
+  name         String
+  phone        String?
+  role         Role          @default(CUSTOMER)
+  active       Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  sessions     Session[]
+  orders       Order[]
+  activity     ActivityLog[]
+  passwordResets PasswordReset[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  sortOrder Int       @default(0)
+  products  Product[]
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  name        String
+  description String
+  ingredients String
+  priceCents  Int
+  costCents   Int      @default(0)
+  prepMinutes Int      @default(15)
+  available   Boolean  @default(true)
+  featured    Boolean  @default(false)
+  popularity  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  addons      Addon[]
+  promotions  Promotion[]
+
+  @@index([categoryId])
+}
+
+model Addon {
+  id         String  @id @default(cuid())
+  productId  String
+  product    Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name       String
+  priceCents Int
+  active     Boolean @default(true)
+
+  @@index([productId])
+}
+
+model Coupon {
+  id               String    @id @default(cuid())
+  code             String    @unique
+  percentOff       Int?
+  amountOffCents   Int?
+  minSubtotalCents Int       @default(0)
+  maxUses          Int?
+  usedCount        Int       @default(0)
+  active           Boolean   @default(true)
+  expiresAt        DateTime?
+  createdAt        DateTime  @default(now())
+}
+
+model Order {
+  id                 String        @id @default(cuid())
+  number             String        @unique
+  trackTokenHash     String        @unique
+  userId             String?
+  user               User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  customerName       String
+  customerPhone      String
+  type               OrderType
+  addressZip         String?
+  addressStreet      String?
+  addressNumber      String?
+  addressNeighborhood String?
+  addressCity        String?
+  addressComplement  String?
+  addressReference   String?
+  paymentMethod      PaymentMethod
+  changeForCents     Int?
+  subtotalCents      Int
+  discountCents      Int           @default(0)
+  deliveryFeeCents   Int           @default(0)
+  totalCents         Int
+  couponCode         String?
+  notes              String?
+  status             OrderStatus   @default(RECEIVED)
+  cancelReason       String?
+  items              OrderItem[]
+  payments           Payment[]
+  statusEvents       StatusEvent[]
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([userId])
+  @@index([customerPhone])
+}
+
+model OrderItem {
+  id             String           @id @default(cuid())
+  orderId        String
+  order          Order            @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId      String
+  productName    String
+  unitPriceCents Int
+  unitCostCents  Int      @default(0)
+  quantity       Int
+  notes          String?
+  addons         OrderItemAddon[]
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model OrderItemAddon {
+  id          String    @id @default(cuid())
+  orderItemId String
+  item        OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  name        String
+  priceCents  Int
+
+  @@index([orderItemId])
+}
+
+model Payment {
+  id          String        @id @default(cuid())
+  orderId     String
+  order       Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  provider    String        @default("DEMO")
+  externalId  String?       @unique
+  status      PaymentStatus @default(PENDING)
+  amountCents Int
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([orderId])
+}
+
+model StatusEvent {
+  id        String      @id @default(cuid())
+  orderId   String
+  order     Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  status    OrderStatus
+  actorId   String?
+  createdAt DateTime    @default(now())
+
+  @@index([orderId])
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  entity    String
+  entityId  String?
+  meta      Json?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model RestaurantSettings {
+  id               String   @id @default("default")
+  name             String   @default("Coyote Culinária TexMex")
+  phone            String?
+  whatsapp         String?
+  address          String?
+  hours            String?
+  deliveryFeeCents Int      @default(0)
+  minOrderCents    Int      @default(0)
+  acceptingOrders  Boolean  @default(false)
+  updatedAt        DateTime @updatedAt
+}
+
+model PasswordReset {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+enum PromotionKind {
+  DAILY_OFFER
+  COMBO
+  HIGHLIGHT
+}
+
+model Promotion {
+  id          String        @id @default(cuid())
+  kind        PromotionKind
+  title       String
+  description String?
+  priceCents  Int?
+  productId   String?
+  product     Product?      @relation(fields: [productId], references: [id], onDelete: SetNull)
+  active      Boolean       @default(true)
+  startsAt    DateTime?
+  endsAt      DateTime?
+  sortOrder   Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([active])
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  description String
+  category    String
+  amountCents Int
+  occurredAt  DateTime
+  createdAt   DateTime @default(now())
+
+  @@index([occurredAt])
+}
